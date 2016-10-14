@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
@@ -53,7 +54,10 @@ public class ArticleDetailFragment extends Fragment implements
     private boolean mIsCard = false;
     private int mStatusBarFullOpacityBottom;
     private Toolbar mToolbar;
+
+    CollapsingToolbarLayout collapsingToolbarLayout;
     /**
+     *
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
@@ -113,6 +117,7 @@ public class ArticleDetailFragment extends Fragment implements
                         .getIntent(), getString(R.string.action_share)));
             }
         });
+        collapsingToolbarLayout= (CollapsingToolbarLayout) mRootView.findViewById(R.id.toolbar_layout);
 
         mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
         getActivityCast().setSupportActionBar(mToolbar);

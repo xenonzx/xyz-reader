@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
-                android:minHeight="100dp"
+
                 android:transitionName="@string/transition_name_of_pic" />
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
