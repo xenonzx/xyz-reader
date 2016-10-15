@@ -91,9 +91,7 @@
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleTextAppearance="@color/secondary_text"
             app:collapsedTitleTextAppearance="@color/secondary_text"
-            app:expandedTitleMarginEnd="48dp"
-            app:expandedTitleMarginStart="16dp"
-            app:expandedTitleMarginBottom="16dp"
+            app:titleEnabled="true"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
             <ImageView
                 android:id="@+id/photo"
@@ -106,7 +104,10 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/detail_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                app:expandedTitleMarginEnd="48dp"
+                app:expandedTitleMarginStart="16dp"
+                app:expandedTitleMarginBottom="16dp"
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="pin"
                 app:layout_scrollFlags="scroll|enterAlways"
