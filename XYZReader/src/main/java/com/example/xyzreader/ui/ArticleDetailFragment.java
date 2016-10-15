@@ -117,9 +117,8 @@ public class ArticleDetailFragment extends Fragment implements
                         .getIntent(), getString(R.string.action_share)));
             }
         });
-        collapsingToolbarLayout= (CollapsingToolbarLayout) mRootView.findViewById(R.id.toolbar_layout);
-
-        mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
+        collapsingToolbarLayout= (CollapsingToolbarLayout) mRootView.findViewById(R.id.coll_toolbar_layout);
+        mToolbar = (Toolbar) mRootView.findViewById(R.id.detail_toolbar);
         getActivityCast().setSupportActionBar(mToolbar);
 
         getActivityCast().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
