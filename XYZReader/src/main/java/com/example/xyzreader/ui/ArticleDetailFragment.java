@@ -1,6 +1,5 @@
 package com.example.xyzreader.ui;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Intent;
@@ -10,11 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -24,8 +21,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -194,11 +189,11 @@ public class ArticleDetailFragment extends Fragment implements
                             if (bitmap != null) {
                                 Palette p = Palette.generate(bitmap, 12);
 
-                                mMutedColor = p.getDarkMutedColor(ContextCompat.getColor(getActivityCast(), R.color.theme_primary));
+                                //mMutedColor = p.getDarkMutedColor(ContextCompat.getColor(getActivityCast(), R.color.theme_primary));
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                                mRootView.findViewById(R.id.meta_bar).setBackgroundColor(mMutedColor);
-                                collapsingToolbarLayout.setContentScrimColor(mMutedColor);
-                                setTaskBarColored(getActivityCast(), mMutedColor);
+                                //mRootView.findViewById(R.id.meta_bar).setBackgroundColor(ContextCompat.getColor(getActivityCast(), R.color.theme_primary));
+                                //collapsingToolbarLayout.setContentScrimColor(mMutedColor);
+                               // setTaskBarColored(getActivityCast(), mMutedColor);
                                 updateStatusBar();
                             }
                         }
@@ -215,27 +210,6 @@ public class ArticleDetailFragment extends Fragment implements
         }
     }
 
-    public static void setTaskBarColored(Activity activity, int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = activity.getWindow();
-
-            // clear FLAG_TRANSLUCENT_STATUS flag:
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-            // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-            // finally change the color
-            // mechanism to keep the status bar color same as the current primary color as the view pager load the
-            // next images and loads new colors
-            if (mStatusbarColor == null) {
-                window.setStatusBarColor(color);
-            }else{
-                window.setStatusBarColor(mStatusbarColor);
-                mStatusbarColor=color;
-            }
-        }
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
