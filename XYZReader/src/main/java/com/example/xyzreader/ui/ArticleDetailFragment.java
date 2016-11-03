@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -189,10 +190,10 @@ public class ArticleDetailFragment extends Fragment implements
                             if (bitmap != null) {
                                 Palette p = Palette.generate(bitmap, 12);
 
-                                //mMutedColor = p.getDarkMutedColor(ContextCompat.getColor(getActivityCast(), R.color.theme_primary));
+                                mMutedColor = p.getDarkMutedColor(ContextCompat.getColor(getActivityCast(), R.color.theme_primary));
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                                //mRootView.findViewById(R.id.meta_bar).setBackgroundColor(ContextCompat.getColor(getActivityCast(), R.color.theme_primary));
-                                //collapsingToolbarLayout.setContentScrimColor(mMutedColor);
+                                mRootView.findViewById(R.id.meta_bar).setBackgroundColor(mMutedColor);
+                                collapsingToolbarLayout.setContentScrimColor(mMutedColor);
                                // setTaskBarColored(getActivityCast(), mMutedColor);
                                 updateStatusBar();
                             }

@@ -1,21 +1,30 @@
 package com.example.xyzreader.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
@@ -36,6 +45,11 @@ public class ArticleDetailActivity extends AppCompatActivity
     private ViewPager mPager;
     private MyPagerAdapter mPagerAdapter;
     private Toolbar mToolbar;
+    int ALL_ARTICLES_LOADER = 0;
+    int CURRENT_ARTICLE_LOADER = 1;
+
+    private int mMutedColor = 0xFF333333;
+    String TAG=ArticleDetailActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +60,13 @@ public class ArticleDetailActivity extends AppCompatActivity
                             View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         }
         setContentView(R.layout.activity_article_detail);
-       // mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        // mToolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(mToolbar);
 
-       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-       // getSupportActionBar().setDisplayShowHomeEnabled(true);
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(ALL_ARTICLES_LOADER, null, this);
 
         mPagerAdapter = new MyPagerAdapter(getFragmentManager());
         mPager = (ViewPager) findViewById(R.id.pager);
@@ -64,6 +78,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageScrollStateChanged(int state) {
+                Log.v(TAG,"onPageScrollStateChanged");
                 super.onPageScrollStateChanged(state);
                 //TODO check this aimation
 //                mUpButton.animate()
@@ -74,58 +89,108 @@ public class ArticleDetailActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
+                Log.v(TAG,"onPageSelected");
                 if (mCursor != null) {
                     mCursor.moveToPosition(position);
                 }
                 mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
+                getLoaderManager().initLoader(CURRENT_ARTICLE_LOADER, null,ArticleDetailActivity.this);
                 updateUpButtonPosition();
+
             }
         });
-
-
-
 
 
         if (savedInstanceState == null) {
             if (getIntent() != null && getIntent().getData() != null) {
                 mStartId = ItemsContract.Items.getItemId(getIntent().getData());
                 mSelectedItemId = mStartId;
+                getLoaderManager().initLoader(CURRENT_ARTICLE_LOADER, null, this);
             }
         }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return ArticleLoader.newAllArticlesInstance(this);
+        Loader<Cursor> returnLoader = null;
+        if (i == ALL_ARTICLES_LOADER) {
+            returnLoader = ArticleLoader.newAllArticlesInstance(this);
+        } else if (i == CURRENT_ARTICLE_LOADER) {
+            returnLoader = ArticleLoader.newInstanceForItemId(this, mSelectedItemId);
+        }
+        return returnLoader;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        mCursor = cursor;
-        mPagerAdapter.notifyDataSetChanged();
+        if (cursorLoader.getId() == ALL_ARTICLES_LOADER) {
+            mCursor = cursor;
+            mPagerAdapter.notifyDataSetChanged();
 
-        // Select the start ID
-        if (mStartId > 0) {
-            mCursor.moveToFirst();
-            // TODO: optimize
-            while (!mCursor.isAfterLast()) {
-                if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
-                    final int position = mCursor.getPosition();
-                    mPager.setCurrentItem(position, false);
-                    break;
+            // Select the start ID
+            if (mStartId > 0) {
+                mCursor.moveToFirst();
+                // TODO: optimize
+                while (!mCursor.isAfterLast()) {
+                    if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
+                        final int position = mCursor.getPosition();
+                        mPager.setCurrentItem(position, false);
+                        break;
+                    }
+                    mCursor.moveToNext();
                 }
-                mCursor.moveToNext();
+                mStartId = 0;
             }
-            mStartId = 0;
+        } else {
+            if (mCursor != null) {
+                ImageLoaderHelper.getInstance(this).getImageLoader()
+                        .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
+                            @Override
+                            public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
+                                Bitmap bitmap = imageContainer.getBitmap();
+                                if (bitmap != null) {
+                                    Palette p = Palette.generate(bitmap, 12);
+
+                                    mMutedColor = p.getDarkMutedColor(ContextCompat.getColor(ArticleDetailActivity.this, R.color.theme_primary));
+
+                                    setTaskBarColored(ArticleDetailActivity.this, mMutedColor);
+
+                                }
+                            }
+
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+
+                            }
+                        });
+            }
+        }
+    }
+
+    public void setTaskBarColored(Activity activity, int color) {
+        Log.v(TAG,"setTaskBarColored");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = activity.getWindow();
+
+            // clear FLAG_TRANSLUCENT_STATUS flag:
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+            // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+
+            window.setStatusBarColor(color);
+
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        mCursor = null;
-        mPagerAdapter.notifyDataSetChanged();
+        if (cursorLoader.getId() == ALL_ARTICLES_LOADER) {
+            mCursor = null;
+            mPagerAdapter.notifyDataSetChanged();
+        }
     }
-
 
 
     private void updateUpButtonPosition() {
@@ -143,7 +208,7 @@ public class ArticleDetailActivity extends AppCompatActivity
             super.setPrimaryItem(container, position, object);
             ArticleDetailFragment fragment = (ArticleDetailFragment) object;
             if (fragment != null) {
-               // mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
+                // mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
                 updateUpButtonPosition();
             }
         }
