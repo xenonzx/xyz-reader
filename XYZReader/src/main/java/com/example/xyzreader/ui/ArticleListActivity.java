@@ -33,7 +33,7 @@ import com.example.xyzreader.data.UpdaterService;
  */
 public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
-    String TAG= ArticleListActivity.class.getSimpleName();
+    String TAG = ArticleListActivity.class.getSimpleName();
 
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -45,9 +45,11 @@ public class ArticleListActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_article_list);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
 
-       // final View toolbarContainerView = findViewById(R.id.toolbar_container);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        // final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
@@ -60,7 +62,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.v(TAG,"onRefresh");
+                Log.v(TAG, "onRefresh");
                 refresh();
             }
         });
@@ -142,9 +144,9 @@ public class ArticleListActivity extends AppCompatActivity implements
                 @Override
                 public void onClick(View view) {
 
-                    Bundle bundle= ActivityOptionsCompat.makeSceneTransitionAnimation(ArticleListActivity.this ,view.findViewById(R.id.thumbnail),getString(R.string.transition_name_of_pic)).toBundle();
+                    Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(ArticleListActivity.this, view.findViewById(R.id.thumbnail), getString(R.string.transition_name_of_pic)).toBundle();
                     startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))),bundle);
+                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))), bundle);
                 }
             });
             return vh;
