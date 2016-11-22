@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -13,6 +14,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
@@ -52,7 +54,7 @@ public class ArticleDetailFragment extends Fragment implements
     private long mItemId;
     private View mRootView;
     private int mMutedColor = 0xFF333333;
-    static   Integer mStatusbarColor;
+    static Integer mStatusbarColor;
 
     private ColorDrawable mStatusBarColorDrawable;
 
@@ -65,6 +67,7 @@ public class ArticleDetailFragment extends Fragment implements
     private Toolbar mToolbar;
 
     CollapsingToolbarLayout collapsingToolbarLayout;
+    FloatingActionButton fab;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -94,14 +97,15 @@ public class ArticleDetailFragment extends Fragment implements
         setHasOptionsMenu(true);
         //getActivityCast().getWindow().setEnterTransition();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setEnterTransition(getSlideDescriptionEnterTransition());
+            //setEnterTransition(getSlideDescriptionEnterTransition());
         }
     }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    Transition getSlideDescriptionEnterTransition(){
-        Slide slide= new Slide(Gravity.BOTTOM);
+    Transition getSlideDescriptionEnterTransition() {
+        Slide slide = new Slide(Gravity.BOTTOM);
         slide.addTarget(R.id.article_body);
-        slide.setInterpolator(AnimationUtils.loadInterpolator(getActivityCast(),android.R.interpolator.linear_out_slow_in));
+        slide.setInterpolator(AnimationUtils.loadInterpolator(getActivityCast(), android.R.interpolator.linear_out_slow_in));
         slide.setDuration(10000);
         return slide;
     }
@@ -138,6 +142,8 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
         collapsingToolbarLayout = (CollapsingToolbarLayout) mRootView.findViewById(R.id.coll_toolbar_layout);
+
+        fab = (FloatingActionButton) mRootView.findViewById(R.id.share_fab);
         mToolbar = (Toolbar) mRootView.findViewById(R.id.detail_toolbar);
         getActivityCast().setSupportActionBar(mToolbar);
 
@@ -207,12 +213,15 @@ public class ArticleDetailFragment extends Fragment implements
                             Bitmap bitmap = imageContainer.getBitmap();
                             if (bitmap != null) {
                                 Palette p = Palette.generate(bitmap, 12);
-
-                                mMutedColor = p.getDarkMutedColor(ContextCompat.getColor(getActivityCast(), R.color.theme_primary));
+                                ArticleDetailActivity tempActivity = getActivityCast();
+                                if (tempActivity != null) {
+                                    mMutedColor = p.getDarkMutedColor(ContextCompat.getColor(getActivityCast(), R.color.theme_primary));
+                                }
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
                                 mRootView.findViewById(R.id.meta_bar).setBackgroundColor(mMutedColor);
                                 collapsingToolbarLayout.setContentScrimColor(mMutedColor);
-                               // setTaskBarColored(getActivityCast(), mMutedColor);
+                                ChangFabColor(mMutedColor);
+                                // setTaskBarColored(getActivityCast(), mMutedColor);
                                 updateStatusBar();
                             }
                         }
@@ -270,4 +279,12 @@ public class ArticleDetailFragment extends Fragment implements
 //                ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY
 //                : mPhotoView.getHeight() - mScrollY;
 //    }
+void ChangFabColor(int PrimaryColor) {
+
+    int complementColor = Color.rgb(255 - Color.red(PrimaryColor),
+            255 - Color.green(PrimaryColor),
+            255 - Color.blue(PrimaryColor));
+    fab.setBackgroundTintList(ColorStateList.valueOf(complementColor));
+
+}
 }

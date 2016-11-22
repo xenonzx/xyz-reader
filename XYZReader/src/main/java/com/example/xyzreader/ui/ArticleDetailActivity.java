@@ -49,7 +49,7 @@ public class ArticleDetailActivity extends AppCompatActivity
     int CURRENT_ARTICLE_LOADER = 1;
 
     private int mMutedColor = 0xFF333333;
-    String TAG=ArticleDetailActivity.class.getSimpleName();
+    String TAG = ArticleDetailActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +78,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageScrollStateChanged(int state) {
-                Log.v(TAG,"onPageScrollStateChanged");
+                Log.v(TAG, "onPageScrollStateChanged");
                 super.onPageScrollStateChanged(state);
                 //TODO check this aimation
 //                mUpButton.animate()
@@ -89,12 +89,12 @@ public class ArticleDetailActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
-                Log.v(TAG,"onPageSelected");
+                Log.v(TAG, "onPageSelected");
                 if (mCursor != null) {
                     mCursor.moveToPosition(position);
                 }
                 mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
-                getLoaderManager().initLoader(CURRENT_ARTICLE_LOADER, null,ArticleDetailActivity.this);
+                getLoaderManager().initLoader(CURRENT_ARTICLE_LOADER, null, ArticleDetailActivity.this);
                 updateUpButtonPosition();
 
             }
@@ -168,7 +168,7 @@ public class ArticleDetailActivity extends AppCompatActivity
     }
 
     public void setTaskBarColored(Activity activity, int color) {
-        Log.v(TAG,"setTaskBarColored");
+        Log.v(TAG, "setTaskBarColored");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = activity.getWindow();
 
