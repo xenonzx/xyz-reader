@@ -9,7 +9,6 @@ import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -190,7 +189,7 @@ public class ArticleDetailFragment extends Fragment implements
         TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
         TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
-        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
+        //bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
         if (mCursor != null) {
             mRootView.setAlpha(0);
@@ -219,6 +218,7 @@ public class ArticleDetailFragment extends Fragment implements
                                 }
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
                                 mRootView.findViewById(R.id.meta_bar).setBackgroundColor(mMutedColor);
+                                ((TextView) mRootView.findViewById(R.id.article_body)).setLinkTextColor(getComplementaryColor(mMutedColor));
                                 collapsingToolbarLayout.setContentScrimColor(mMutedColor);
                                 ChangFabColor(mMutedColor);
                                 // setTaskBarColored(getActivityCast(), mMutedColor);
@@ -269,7 +269,7 @@ public class ArticleDetailFragment extends Fragment implements
         bindViews();
     }
 
-//    public int getUpButtonFloor() {
+    //    public int getUpButtonFloor() {
 //        if (mPhotoContainerView == null || mPhotoView.getHeight() == 0) {
 //            return Integer.MAX_VALUE;
 //        }
@@ -279,12 +279,17 @@ public class ArticleDetailFragment extends Fragment implements
 //                ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY
 //                : mPhotoView.getHeight() - mScrollY;
 //    }
-void ChangFabColor(int PrimaryColor) {
+    void ChangFabColor(int PrimaryColor) {
 
-    int complementColor = Color.rgb(255 - Color.red(PrimaryColor),
-            255 - Color.green(PrimaryColor),
-            255 - Color.blue(PrimaryColor));
-    fab.setBackgroundTintList(ColorStateList.valueOf(complementColor));
+        int complementColor = getComplementaryColor(PrimaryColor);
+        fab.setBackgroundTintList(ColorStateList.valueOf(complementColor));
 
-}
+    }
+
+    int getComplementaryColor(int PrimaryColor) {
+        int complementColor = Color.rgb(255 - Color.red(PrimaryColor),
+                255 - Color.green(PrimaryColor),
+                255 - Color.blue(PrimaryColor));
+        return complementColor;
+    }
 }
