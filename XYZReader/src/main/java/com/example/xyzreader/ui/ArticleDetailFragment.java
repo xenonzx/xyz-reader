@@ -68,6 +68,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     CollapsingToolbarLayout collapsingToolbarLayout;
     FloatingActionButton fab;
+    private String transtionName;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -269,7 +270,7 @@ public class ArticleDetailFragment extends Fragment implements
         bindViews();
     }
 
-//    public int getUpButtonFloor() {
+    //    public int getUpButtonFloor() {
 //        if (mPhotoContainerView == null || mPhotoView.getHeight() == 0) {
 //            return Integer.MAX_VALUE;
 //        }
@@ -279,12 +280,29 @@ public class ArticleDetailFragment extends Fragment implements
 //                ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY
 //                : mPhotoView.getHeight() - mScrollY;
 //    }
-void ChangFabColor(int PrimaryColor) {
+    void ChangFabColor(int PrimaryColor) {
 
-    int complementColor = Color.rgb(255 - Color.red(PrimaryColor),
-            255 - Color.green(PrimaryColor),
-            255 - Color.blue(PrimaryColor));
-    fab.setBackgroundTintList(ColorStateList.valueOf(complementColor));
+        int complementColor = Color.rgb(255 - Color.red(PrimaryColor),
+                255 - Color.green(PrimaryColor),
+                255 - Color.blue(PrimaryColor));
+        fab.setBackgroundTintList(ColorStateList.valueOf(complementColor));
 
-}
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        //just in case view was not created and transition was set
+        setImageTransitionName(transtionName);
+    }
+
+    void setImageTransitionName(String transitionName) {
+        Log.v(TAG,"setImageTransitionName "+transitionName);
+        this.transtionName = transitionName;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (mPhotoView != null) {
+                mPhotoView.setTransitionName(transitionName);
+            }
+        }
+    }
 }

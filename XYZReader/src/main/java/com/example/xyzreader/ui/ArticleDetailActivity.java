@@ -38,6 +38,14 @@ public class ArticleDetailActivity extends AppCompatActivity
     private Cursor mCursor;
     private long mStartId;
 
+    public long getmSelectedItemId() {
+        return mSelectedItemId;
+    }
+
+    public void setmSelectedItemId(long mSelectedItemId) {
+        this.mSelectedItemId = mSelectedItemId;
+    }
+
     private long mSelectedItemId;
     private int mSelectedItemUpButtonFloor = Integer.MAX_VALUE;
     private int mTopInset;
@@ -75,11 +83,15 @@ public class ArticleDetailActivity extends AppCompatActivity
                 .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));
         mPager.setPageMarginDrawable(new ColorDrawable(0x22000000));
 
-        mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+               // Log.v(TAG, "onPageScrolled" + position + "position offset" + positionOffset);
+            }
+
             @Override
             public void onPageScrollStateChanged(int state) {
-                Log.v(TAG, "onPageScrollStateChanged");
-                super.onPageScrollStateChanged(state);
+                //Log.v(TAG, "onPageScrollStateChanged" + state);
                 //TODO check this aimation
 //                mUpButton.animate()
 //                        .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
@@ -89,13 +101,44 @@ public class ArticleDetailActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
-                Log.v(TAG, "onPageSelected");
+                Log.v(TAG, "onPageSelected" + position);
                 if (mCursor != null) {
                     mCursor.moveToPosition(position);
                 }
+                //reset shared element transaction name
+                if (position == 0) {
+                    Log.v(TAG, "first fragment");
+                    ((ArticleDetailFragment) mPagerAdapter.getItem(position + 1)).setImageTransitionName(null);
+
+                } else if (position == mPagerAdapter.getCount()) {
+                    Log.v(TAG, "last fragment");
+                    ((ArticleDetailFragment) mPagerAdapter.getItem(position - 1)).setImageTransitionName(null);
+                } else {
+                    Log.v(TAG, "middle fragment");
+                    ((ArticleDetailFragment) mPagerAdapter.getItem(position - 1)).setImageTransitionName(null);
+                    ((ArticleDetailFragment) mPagerAdapter.getItem(position + 1)).setImageTransitionName(null);
+                }
+
+                ((ArticleDetailFragment) mPagerAdapter.getItem(position)).setImageTransitionName(getString(R.string.transition_name_of_pic));
                 mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
                 getLoaderManager().initLoader(CURRENT_ARTICLE_LOADER, null, ArticleDetailActivity.this);
                 updateUpButtonPosition();
+
+            }
+        });
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
 
             }
         });
